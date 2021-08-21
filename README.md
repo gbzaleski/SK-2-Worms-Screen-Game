@@ -11,7 +11,7 @@ After compiling project (make command can be used) there are to be used accordin
 
 # Full project description in Polish language:
 ## 1. Gra robaki ekranowe
-1.1. Zasady gry
+### 1.1. Zasady gry
 
 Tegoroczne duże zadanie zaliczeniowe polega na napisaniu gry sieciowej. Gra rozgrywa się na prostokątnym ekranie. Uczestniczy w niej co najmniej dwóch graczy. Każdy z graczy steruje ruchem robaka. Robak je piksel, na którym się znajduje. Gra rozgrywa się w turach. W każdej turze robak może się przesunąć na inny piksel, pozostawiając ten, na którym był, całkowicie zjedzony. Robak porusza się w kierunku ustalonym przez gracza. Jeśli robak wejdzie na piksel właśnie jedzony lub już zjedzony albo wyjdzie poza ekran, to spada z ekranu, a gracz nim kierujący odpada z gry. Wygrywa ten gracz, którego robak pozostanie jako ostatni na ekranie. Szczegółowy algorytm robaka jest opisany poniżej.
 1.2. Architektura rozwiązania
