@@ -14,7 +14,7 @@ After compiling project (make command can be used) there are to be used accordin
 ### 1.1. Zasady gry
 
 Tegoroczne duże zadanie zaliczeniowe polega na napisaniu gry sieciowej. Gra rozgrywa się na prostokątnym ekranie. Uczestniczy w niej co najmniej dwóch graczy. Każdy z graczy steruje ruchem robaka. Robak je piksel, na którym się znajduje. Gra rozgrywa się w turach. W każdej turze robak może się przesunąć na inny piksel, pozostawiając ten, na którym był, całkowicie zjedzony. Robak porusza się w kierunku ustalonym przez gracza. Jeśli robak wejdzie na piksel właśnie jedzony lub już zjedzony albo wyjdzie poza ekran, to spada z ekranu, a gracz nim kierujący odpada z gry. Wygrywa ten gracz, którego robak pozostanie jako ostatni na ekranie. Szczegółowy algorytm robaka jest opisany poniżej.
-1.2. Architektura rozwiązania
+### 1.2. Architektura rozwiązania
 
 Na grę składają się trzy komponenty: serwer, klient, serwer obsługujący interfejs użytkownika. Należy zaimplementować serwer i klient. Aplikację implementującą serwer obsługujący graficzny interfejs użytkownika (ang. GUI) dostarczamy.
 
@@ -23,7 +23,7 @@ Serwer komunikuje się z klientami, zarządza stanem gry, odbiera od klientów i
 Klient komunikuje się z serwerem gry oraz interfejsem użytkownika. Klient dba także o to, żeby interfejs użytkownika otrzymywał polecenia w kolejności zgodnej z przebiegiem partii oraz bez duplikatów.
 
 Specyfikacje protokołów komunikacyjnych, rodzaje zdarzeń oraz formaty komunikatów i poleceń są opisane poniżej.
-1.3. Parametry wywołania programów
+### 1.3. Parametry wywołania programów
 
 Serwer:
 
@@ -54,7 +54,7 @@ Do parsowania parametrów linii komend można użyć funkcji getopt z biblioteki
 ## 2. Protokół komunikacyjny pomiędzy klientem a serwerem
 
 Wymiana danych odbywa się po UDP. W datagramach przesyłane są dane binarne, zgodne z poniżej zdefiniowanymi formatami komunikatów. W komunikatach wszystkie liczby przesyłane są w sieciowej kolejności bajtów.
-2.1. Komunikaty od klienta do serwera
+### 2.1. Komunikaty od klienta do serwera
 
 Komunikat od klienta do serwera ma kolejno następujące pola:
 
@@ -72,7 +72,7 @@ Pole turn_direction wskazuje, czy gracz chce skręcać (czy ma wciśniętą któ
 Puste pole player_name oznacza, że klient nie ma zamiaru włączać się do gry, jednakże chętnie poobserwuje, co się dzieje na planszy.
 
 Pole session_id jest takie samo dla wszystkich datagramów wysyłanych przez danego klienta. Klient przy uruchomieniu ustala session_id na bieżący czas wyrażony w mikrosekundach od 1970-01-01 00:00:00 +0000 (UTC).
-2.2. Komunikaty od serwera do klienta
+### 2.2. Komunikaty od serwera do klienta
 
 Komunikat od serwera do klienta ma kolejno następujące pola:
 
@@ -84,7 +84,7 @@ Serwer wysyła taki komunikat natychmiast po odebraniu komunikatu od klienta. Wy
 Maksymalny rozmiar pola danych datagramu UDP wysyłanego przez serwer wynosi 548 bajtów. Jeśli serwer potrzebuje wysłać więcej zdarzeń, niż może zmieścić w jednym datagramie UDP, wysyła je w kolejnych komunikatach. W tym przypadku wszystkie oprócz ostatniego muszą zawierać maksymalną liczbę zdarzeń możliwą do umieszczenia w pojedynczym datagramie.
 
 Pole game_id służy do identyfikacji bieżącej partii w sytuacji, gdy do klienta mogą dochodzić opóźnione datagramy z uprzednio zakończonej partii.
-2.3. Rekordy opisujące zdarzenia
+### 2.3. Rekordy opisujące zdarzenia
 
 Rekord opisujący zdarzenie ma następujący format:
 
@@ -119,7 +119,7 @@ Możliwe rodzaje zdarzeń:
 Wśród nazw graczy w zdarzeniu NEW_GAME nie umieszcza się pustych nazw obserwatorów.
 
 Kolejność graczy w zdarzeniu NEW_GAME oraz ich numerację w zdarzeniach PIXEL i NEW_GAME ustala się, ustawiając alfabetycznie ich nazwy. Graczy numeruje się od zera.
-2.4. Generator liczb losowych
+### 2.4. Generator liczb losowych
 
 Do wytwarzania wartości losowych należy użyć poniższego deterministycznego generatora liczb 32-bitowych. Kolejne wartości zwracane przez ten generator wyrażone są wzorem:
 
@@ -129,7 +129,7 @@ r_i = (r_{i-1} * 279410273) mod 4294967291
 gdzie wartość seed jest 32-bitowa i jest przekazywana do serwera za pomocą parametru -s (domyślnie są to 32 młodsze bity wartości zwracanej przez wywołanie time(NULL)). W pierwszym wywołaniu generatora powinna zostać zwrócona wartość r_0 == seed.
 
 Należy użyć dokładnie takiego generatora, żeby umożliwić automatyczne testowanie rozwiązania (uwaga na konieczność wykonywania pośrednich obliczeń na typie 64-bitowym).
-2.5. Stan gry
+### 2.5. Stan gry
 
 Podczas partii serwer utrzymuje stan gry, w skład którego wchodzą m.in.:
 
@@ -141,7 +141,7 @@ Podczas partii serwer utrzymuje stan gry, w skład którego wchodzą m.in.:
 Lewy górny róg planszy ma współrzędne (0, 0), odcięte rosną w prawo, a rzędne w dół. Kierunek ruchu jest wyrażony w stopniach, zgodnie z ruchem wskazówek zegara, a 0 oznacza kierunek w prawo.
 
 Warto tu podkreślić, że bieżąca pozycja robaka jest obliczana i przechowywana w formacie zmiennoprzecinkowym. Przy konwersji pozycji zmiennoprzecinkowej na współrzędne piksela stosuje się zaokrąglanie w dół. Uznajemy, że pozycja po zaokrągleniu znajduje się na planszy, jeśli rzędna znajduje się w przedziale domkniętym [0, maxy - 1], a odcięta w przedziale domkniętym [0, maxx - 1].
-2.6. Podłączanie i odłączanie graczy
+### 2.6. Podłączanie i odłączanie graczy
 
 Podłączenie nowego gracza może odbyć się w dowolnym momencie. Wystarczy, że serwer odbierze prawidłowy komunikat od nowego klienta. Jeśli nowy gracz podłączy się podczas partii, staje się jej obserwatorem, otrzymuje informacje o wszystkich zdarzeniach, które miały miejsce od początku partii. Do walki dołącza w kolejnej partii.
 
@@ -152,7 +152,7 @@ Brak komunikacji od gracza przez 2 sekundy skutkuje jego odłączeniem. Jeśli g
 Klienty są identyfikowane za pomocą par (gniazdo, session_id), jednakże otrzymanie komunikatu z gniazda istniejącego klienta, aczkolwiek z większym niż dotychczasowe session_id, jest równoznaczne z odłączeniem istniejącego klienta i podłączeniem nowego. Komunikaty z mniejszym niż dotychczasowe session_id należy ignorować.
 
 Pakiety otrzymane z nieznanego dotychczas gniazda, jednakże z nazwą podłączonego już klienta, są ignorowane.
-2.7. Rozpoczęcie partii i zarządzanie podłączonymi klientami
+### 2.7. Rozpoczęcie partii i zarządzanie podłączonymi klientami
 
 Do rozpoczęcia partii potrzeba, aby wszyscy podłączeni gracze (o niepustej nazwie) nacisnęli strzałkę (przysłali wartość turn_direction różną od zera) oraz żeby tych graczy było co najmniej dwóch.
 
@@ -170,7 +170,7 @@ dla kolejnych graczy zainicjuj pozycję i kierunek ruchu ich robaków
     wygeneruj zdarzenie PIXEL
 
 A zatem z gry można odpaść już na starcie.
-2.8. Przebieg partii
+### 2.8. Przebieg partii
 
 Partia składa się z tur. Tura trwa 1/ROUNDS_PER_SEC sekundy. Ruchy graczy wyznacza się w kolejności alfabetycznej ich nazw.
 
@@ -187,10 +187,10 @@ dla kolejnych graczy
   w przeciwnym razie
     wygeneruj zdarzenie PIXEL
 
-2.9. Zakończenie partii
+### 2.9. Zakończenie partii
 
 Gdy na planszy zostanie tylko jeden robak, gra się kończy. Generowane jest zdarzenie GAME_OVER. Po zakończeniu partii serwer wciąż obsługuje komunikację z klientami. Jeśli w takiej sytuacji serwer otrzyma od każdego podłączonego klienta (o niepustej nazwie) co najmniej jeden komunikat z turn_direction różnym od zera, rozpoczyna kolejną partię. Klienty muszą radzić sobie z sytuacją, gdy po rozpoczęciu nowej gry będą dostawać jeszcze stare, opóźnione datagramy z poprzedniej gry.
-3. Protokół komunikacyjny pomiędzy klientem a interfejsem użytkownika
+## 3. Protokół komunikacyjny pomiędzy klientem a interfejsem użytkownika
 
 Wymiana danych odbywa się po TCP. Komunikaty przesyłane są w formie tekstowej, każdy w osobnej linii. Liczby są reprezentowane dziesiętnie. Linia zakończona jest znakiem o kodzie ASCII 10. Jeśli linia zawiera kilka wartości, to wysyłający powinien te wartości oddzielić pojedynczą spacją i nie dołączać dodatkowych białych znaków na początku ani na końcu.
 
@@ -211,7 +211,7 @@ Serwer obsługujący interfejs użytkownika wysyła następujące komunikaty:
     RIGHT_KEY_DOWN
     RIGHT_KEY_UP
 
-4. Ustalenia dodatkowe
+## 4. Ustalenia dodatkowe
 
 Programy powinny umożliwiać komunikację zarówno przy użyciu IPv4, jak i IPv6.
 
